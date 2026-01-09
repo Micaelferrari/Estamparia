@@ -45,18 +45,13 @@ export const findByName = async (name: string): Promise<Client[]> => {
 };
 
 export const findById = async (id: string) => {
-  const client = await db<Client>("clients")
-    .select("*")
-    .where("id", id)
-  
+  const client = await db<Client>("clients").select("*").where("id", id);
 
   return client;
 };
 
-export const deleteClient = async(id: string) =>{
-  const deleted = await db("clients")
-  .where({id})
-  .delete()
+export const deleteClient = async (id: string): Promise<Client[]> => {
+  const deleted = await db("clients").where({ id }).delete().returning("*");
 
-  return deleted;
-}
+  return deleted[0];
+};

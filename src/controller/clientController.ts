@@ -18,12 +18,24 @@ export const get = async (req: Request, res: Response) => {
   }
 };
 
+export const getById = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    const client = await clientService.getById(id);
+
+    return res.status(200).json(client);
+  } catch (error) {
+    return res.status(500).json({ message: "Erro no servidor" });
+  }
+};
+
 export const create = async (req: Request, res: Response) => {
   try {
     const { name, phone, email, notes, adress } = req.body;
-    
-     if (!req.body || Object.keys(req.body).length === 0) {
-      return res.status(400).json({ message: 'Body não pode ser vazio' });
+
+    if (!req.body || Object.keys(req.body).length === 0) {
+      return res.status(400).json({ message: "Body não pode ser vazio" });
     }
 
     if (!name || !phone) {

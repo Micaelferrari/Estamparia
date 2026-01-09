@@ -50,6 +50,20 @@ export const getByName = async (name : string) => {
   return clients;
 };
 
+export const getById = async (id : string) => {
+
+  if (id.length === 0) {
+  throw new Error('Id não pode ser vazio');
+}
+
+  const clients = await clientRepository.findById(id);
+ 
+ if (!clients) {
+  throw new Error('Cliente não encontrado');
+}
+  return clients;
+};
+
 export const deleteClient = async(id : string) =>{
   const client = await clientRepository.findById(id);
 
