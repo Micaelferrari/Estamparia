@@ -1,14 +1,6 @@
 import { db } from "../database/connection";
 import { randomUUID } from "crypto";
-import { Client } from "../models/clientModel";
-
-interface CreateClientData {
-  name: string;
-  phone?: string;
-  email?: string;
-  notes?: string;
-  adress?: string;
-}
+import { UpdateClientData, Client,  CreateClientData } from "../models/clientModel";
 
 export const create = async (data: CreateClientData): Promise<Client> => {
   const id = randomUUID();
@@ -18,7 +10,7 @@ export const create = async (data: CreateClientData): Promise<Client> => {
     phone: data.phone,
     email: data.email,
     notes: data.notes,
-    adress: data.adress,
+    address: data.address,
     created_at: new Date(),
   };
 
@@ -54,4 +46,16 @@ export const deleteClient = async (id: string): Promise<Client[]> => {
   const deleted = await db("clients").where({ id }).delete().returning("*");
 
   return deleted[0];
+};
+
+export const update = async (
+  id: string,
+  data: UpdateClientData
+): Promise<Client> => {
+  const updated = await db("clients")
+    .where({ id })
+    .update(data)
+    .returning("*");
+
+  return updated[0];
 };

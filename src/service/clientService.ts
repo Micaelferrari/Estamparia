@@ -1,4 +1,4 @@
-import { Client } from "./../models/clientModel";
+import { Client, UpdateClientData } from "./../models/clientModel";
 import * as clientRepository from "../repository/clientRepository";
 
 export const create = async (
@@ -6,14 +6,14 @@ export const create = async (
   phone: string,
   email: string,
   notes: string,
-  adress: string
+  address: string
 ) => {
   const dadosClient = {
     name,
     phone,
     email,
     notes,
-    adress,
+    address,
   };
 
     if (name.length === 0) {
@@ -64,7 +64,28 @@ export const getById = async (id : string) => {
   return clients;
 };
 
-export const deleteClient = async(id : string) =>{
+export const update = async (id : string, data : UpdateClientData ) => {
+   if (!id || id.trim().length === 0) {
+    throw new Error("Id inválido");
+  }
+
+  if (!data || Object.keys(data).length === 0) {
+    throw new Error("Informe ao menos um campo para atualização");
+  }
+
+  const clientExists = await clientRepository.findById(id);
+
+  if (!clientExists) {
+    throw new Error("Cliente não encontrado");
+  }
+
+  const updatedClient = await clientRepository.update(id, data);
+
+  return updatedClient;
+};
+
+
+export const deleteClient = async(id : string) => {
   const client = await clientRepository.findById(id);
 
   if (!client) {
