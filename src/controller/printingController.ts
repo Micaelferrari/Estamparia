@@ -1,17 +1,18 @@
-import { UpdateClientData } from '../models/clientModel';
+import { Printing } from './../models/printingModel';
+import { UpdatePrintingData } from '../models/printingModel';
 import { Request, Response } from "express";
-import * as clientService from "../service/clientService";
+import * as printingService from "../service/printingService";
 
 export const get = async (req: Request, res: Response) => {
   try {
     const { name } = req.query;
 
     if (name) {
-      const data = await clientService.getByName(name as string);
+      const data = await printingService.getByName(name as string);
       return res.status(200).json(data);
     }
 
-    const data = await clientService.getAll();
+    const data = await printingService.getAll();
     return res.status(200).json(data);
   } catch (error) {
     return res.status(500).json({ message: "Erro no servidor" });
@@ -22,9 +23,9 @@ export const getById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
-    const client = await clientService.getById(id);
+    const printing = await printingService.getById(id);
 
-    return res.status(200).json(client);
+    return res.status(200).json(printing);
   } catch (error) {
     return res.status(500).json({ message: "Erro no servidor" });
   }
@@ -32,7 +33,7 @@ export const getById = async (req: Request, res: Response) => {
 
 export const create = async (req: Request, res: Response) => {
   try {
-    const { name, phone, email, notes, address } = req.body;
+    const { name, phone, address } = req.body;
 
     if (!req.body || Object.keys(req.body).length === 0) {
       return res.status(400).json({ message: "Body não pode ser vazio" });
@@ -48,23 +49,14 @@ export const create = async (req: Request, res: Response) => {
         message: "name e phone devem ser strings",
       });
     }
-    if (email && typeof email !== "string") {
-      return res.status(400).json({ message: "email deve ser string" });
-    }
-
-    if (notes && typeof notes !== "string") {
-      return res.status(400).json({ message: "notes deve ser string" });
-    }
 
     if (address && typeof address !== "string") {
       return res.status(400).json({ message: "address deve ser string" });
     }
 
-    const data = await clientService.create(
+    const data = await printingService.create(
       name.trim(),
       phone.trim(),
-      email,
-      notes,
       address
     );
 
@@ -78,13 +70,12 @@ export const create = async (req: Request, res: Response) => {
 export const update = async (req: Request, res: Response) => {
   try {
     const { id }= req.params;
-    const { name, phone, email, notes, address } = req.body;
-     const data : UpdateClientData = {
+    const { name, phone, address } = req.body;
+     const data : UpdatePrintingData = {
       name,
       phone,
-      email,
-      notes,
-      address
+      address,
+      created_at: new Date()
     }
 
   if (!id) {
@@ -92,21 +83,21 @@ export const update = async (req: Request, res: Response) => {
           message: "ID é obrigatório para atualizar",
         });
       }
-    if (!name && !phone && !email && !notes && !address) {
+    if (!name && !phone && !address) {
       return res.status(400).json({
         message: "Informe ao menos um campo para atualização",
       });
     }
 
- const client = await clientService.update(id, data);
+ const printing = await printingService.update(id, data);
 
-    return res.status(200).json(client);
+    return res.status(200).json(printing);
   } catch (error) {
     return res.status(500).json({ message: "Erro no servidor" });
   }
 };
 
-export const deleteClient = async (req: Request, res: Response) => {
+export const deletePrinting = async (req: Request, res: Response) => {
   try {
     const id = req.params.id;
 
@@ -116,8 +107,8 @@ export const deleteClient = async (req: Request, res: Response) => {
       });
     }
 
-    const clientDeleted = await clientService.deleteClient(id);
-    return res.status(200).json(clientDeleted);
+    const printingDeleted = await printingService.deletePrinting(id);
+    return res.status(200).json(printingDeleted);
   } catch (error: any) {
     console.error(error);
     return res.status(500).json({ message: "Erro no servidor" });
